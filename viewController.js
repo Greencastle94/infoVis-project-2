@@ -14,10 +14,10 @@ var x = d3.scaleTime().range([0, width]),
     y = d3.scaleLinear().range([height, 0]),
     z = d3.scaleOrdinal(d3.schemeCategory10);
 
-var line = d3.line()
-    .curve(d3.curveBasis)
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.temperature); });
+// var line = d3.line()
+//     .curve(d3.curveBasis)
+//     .x(function(d) { return x(d.date); })
+//     .y(function(d) { return y(d.temperature); });
 
 d3.tsv("data/test.tsv", type, function(error, data) {
   if (error) throw error;
@@ -40,11 +40,13 @@ d3.tsv("data/test.tsv", type, function(error, data) {
 
   z.domain(cities.map(function(c) { return c.id; }));
 
+  // X-AXIS
   g.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
 
+  // Y-AXIS
   g.append("g")
       .attr("class", "axis axis--y")
       .call(d3.axisLeft(y))
@@ -55,6 +57,7 @@ d3.tsv("data/test.tsv", type, function(error, data) {
       .attr("fill", "#000")
       .text("Temperature, ºF");
 
+  // LINES
   var city = g.selectAll(".city")
     .data(cities)
     .enter().append("g")
