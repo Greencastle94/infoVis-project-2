@@ -2,9 +2,27 @@ var margin = {top: 30, right: 10, bottom: 10, left: 10},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal().rangePoints([0, width], 1),
-    y = {},
-    dragging = {};
+var x = d3.scale.ordinal().rangePoints([0, width], 1);
+var y = {};
+var z = d3.scale.ordinal()
+    .range(["#a6cee3",
+            "#1f78b4",
+            "#b2df8a",
+            "#33a02c",
+            "#fb9a99",
+            "#e31a1c",
+            "#fdbf6f",
+            "#ff7f00",
+            "#cab2d6",
+            "#6a3d9a",
+            "#ffff99",
+            "#b15928"]);
+var dragging = {};
+
+var tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .text("");
 
 var line = d3.svg.line(),
     axis = d3.svg.axis().orient("left"),
@@ -17,14 +35,20 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("data/Feeling_of_happiness.csv", function(error, cars) {
-
+d3.csv("data/Feeling_of_happiness - Wave 6.csv", function(error, cars) {
   // Extract the list of dimensions and create a scale for each.
   x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
-    return d != "Question" && d != "Country" && (y[d] = d3.scale.linear()
-        .domain(d3.extent(cars, function(p) { return +p[d]; }))
+    return d != "Country" && (y[d] = d3.scale.linear()
+        .domain([0, d3.max(cars, function(p) { return +p[d].replace(',', '.'); })])
         .range([height, 0]));
-  }));
+  }))
+
+  // Add countries to the color (ordinal) scale
+  var countries = [];
+  cars.forEach(
+     function(p) {countries.push(p.Country)}
+  );
+  z.domain(countries);
 
   // Add grey background lines for context.
   background = svg.append("g")
@@ -33,14 +57,25 @@ d3.csv("data/Feeling_of_happiness.csv", function(error, cars) {
       .data(cars)
     .enter().append("path")
       .attr("d", path);
+      // .on("mouseover", function() {document.getElementById("p2").style.color = "blue";})
+      // .on("mouseout", function() {});
 
-  // Add blue foreground lines for focus.
+  // Add multi-color foreground lines for focus.
   foreground = svg.append("g")
       .attr("class", "foreground")
     .selectAll("path")
       .data(cars)
     .enter().append("path")
-      .attr("d", path);
+      .attr("d", path)
+      .attr("stroke", function(d) { return z(d.Country); })
+      .on("mouseover", function(d) {
+                          tooltip.style("visibility", "visible");
+                          return tooltip.text(d.Country);})
+      .on("mousemove", function() {return tooltip.style("top",
+          (d3.event.pageY+10)+"px").style("left",(d3.event.pageX+15)+"px");})
+      .on("mouseout", function() {
+                          tooltip.style("visibility", "hidden");
+                          return tooltip.text("");});
 
   // Add a group element for each dimension.
   var g = svg.selectAll(".dimension")
@@ -104,7 +139,7 @@ function transition(g) {
 
 // Returns the path for a given data point.
 function path(d) {
-  return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
+  return line(dimensions.map(function(p) { return [position(p), y[p](d[p].replace(',', '.'))]; }));
 }
 
 function brushstart() {
