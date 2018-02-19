@@ -1,6 +1,6 @@
 var margin = {top: 30, right: 10, bottom: 10, left: 10},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = 1200 - margin.left - margin.right,
+    height = 700 - margin.top - margin.bottom;
 
 var x = d3.scale.ordinal().rangePoints([0, width], 1);
 var y = {};
@@ -21,7 +21,7 @@ var dragging = {};
 
 var tooltip = d3.select("body")
     .append("div")
-    .attr("class", "tooltip")
+    .attr("class", "countryLabel")
     .text("");
 
 var line = d3.svg.line(),
@@ -29,104 +29,107 @@ var line = d3.svg.line(),
     background,
     foreground;
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("body").select(".svg").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("data/Feeling_of_happiness - Wave 6.csv", function(error, cars) {
-  // Extract the list of dimensions and create a scale for each.
-  x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
-    return d != "Country" && (y[d] = d3.scale.linear()
-        .domain([0, d3.max(cars, function(p) { return +p[d].replace(',', '.'); })])
-        .range([height, 0]));
-  }))
+function loadData(data_url) {
+  d3.csv(data_url, function(error, cars) {
+    console.log(cars);
+    // Extract the list of dimensions and create a scale for each.
+    x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
+      return d != "Country" && (y[d] = d3.scale.linear()
+          .domain(d3.extent(cars, function(p) { return +p[d].replace(',', '.'); }))
+          .range([height, 0]));
+    }))
 
-  // Add countries to the color (ordinal) scale
-  var countries = [];
-  cars.forEach(
-     function(p) {countries.push(p.Country)}
-  );
-  z.domain(countries);
+    // Add countries to the color (ordinal) scale
+    var countries = [];
+    cars.forEach(
+       function(p) {countries.push(p.Country)}
+    );
+    z.domain(countries);
 
-  // Add grey background lines for context.
-  background = svg.append("g")
-      .attr("class", "background")
-    .selectAll("path")
-      .data(cars)
-    .enter().append("path")
-      .attr("d", path);
-      // .on("mouseover", function() {document.getElementById("p2").style.color = "blue";})
-      // .on("mouseout", function() {});
+    // Add grey background lines for context.
+    background = svg.append("g")
+        .attr("class", "background")
+      .selectAll("path")
+        .data(cars)
+      .enter().append("path")
+        .attr("d", path);
+        // .on("mouseover", function() {document.getElementById("p2").style.color = "blue";})
+        // .on("mouseout", function() {});
 
-  // Add multi-color foreground lines for focus.
-  foreground = svg.append("g")
-      .attr("class", "foreground")
-    .selectAll("path")
-      .data(cars)
-    .enter().append("path")
-      .attr("d", path)
-      .attr("stroke", function(d) { return z(d.Country); })
-      .on("mouseover", function(d) {
-                          tooltip.style("visibility", "visible");
-                          return tooltip.text(d.Country);})
-      .on("mousemove", function() {return tooltip.style("top",
-          (d3.event.pageY+10)+"px").style("left",(d3.event.pageX+15)+"px");})
-      .on("mouseout", function() {
-                          tooltip.style("visibility", "hidden");
-                          return tooltip.text("");});
+    // Add multi-color foreground lines for focus.
+    foreground = svg.append("g")
+        .attr("class", "foreground")
+      .selectAll("path")
+        .data(cars)
+      .enter().append("path")
+        .attr("d", path)
+        .attr("stroke", function(d) { return z(d.Country); })
+        .on("mouseover", function(d) {
+                            tooltip.style("visibility", "visible");
+                            return tooltip.text(d.Country);})
+        .on("mousemove", function() {return tooltip.style("top",
+            (d3.event.pageY+10)+"px").style("left",(d3.event.pageX+15)+"px");})
+        .on("mouseout", function() {
+                            tooltip.style("visibility", "hidden");
+                            return tooltip.text("");});
 
-  // Add a group element for each dimension.
-  var g = svg.selectAll(".dimension")
-      .data(dimensions)
-    .enter().append("g")
-      .attr("class", "dimension")
-      .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
-      .call(d3.behavior.drag()
-        .origin(function(d) { return {x: x(d)}; })
-        .on("dragstart", function(d) {
-          dragging[d] = x(d);
-          background.attr("visibility", "hidden");
+    // Add a group element for each dimension.
+    var g = svg.selectAll(".dimension")
+        .data(dimensions)
+      .enter().append("g")
+        .attr("class", "dimension")
+        .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+        .call(d3.behavior.drag()
+          .origin(function(d) { return {x: x(d)}; })
+          .on("dragstart", function(d) {
+            dragging[d] = x(d);
+            background.attr("visibility", "hidden");
+          })
+          .on("drag", function(d) {
+            dragging[d] = Math.min(width, Math.max(0, d3.event.x));
+            foreground.attr("d", path);
+            dimensions.sort(function(a, b) { return position(a) - position(b); });
+            x.domain(dimensions);
+            g.attr("transform", function(d) { return "translate(" + position(d) + ")"; })
+          })
+          .on("dragend", function(d) {
+            delete dragging[d];
+            transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
+            transition(foreground).attr("d", path);
+            background
+                .attr("d", path)
+              .transition()
+                .delay(500)
+                .duration(0)
+                .attr("visibility", null);
+          }));
+
+    // Add an axis and title.
+    g.append("g")
+        .attr("class", "axis")
+        .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
+      .append("text")
+        .style("text-anchor", "middle")
+        .attr("y", -9)
+        .text(function(d) { return d; });
+
+    // Add and store a brush for each axis.
+    g.append("g")
+        .attr("class", "brush")
+        .each(function(d) {
+          d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brushstart", brushstart).on("brush", brush));
         })
-        .on("drag", function(d) {
-          dragging[d] = Math.min(width, Math.max(0, d3.event.x));
-          foreground.attr("d", path);
-          dimensions.sort(function(a, b) { return position(a) - position(b); });
-          x.domain(dimensions);
-          g.attr("transform", function(d) { return "translate(" + position(d) + ")"; })
-        })
-        .on("dragend", function(d) {
-          delete dragging[d];
-          transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
-          transition(foreground).attr("d", path);
-          background
-              .attr("d", path)
-            .transition()
-              .delay(500)
-              .duration(0)
-              .attr("visibility", null);
-        }));
-
-  // Add an axis and title.
-  g.append("g")
-      .attr("class", "axis")
-      .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
-    .append("text")
-      .style("text-anchor", "middle")
-      .attr("y", -9)
-      .text(function(d) { return d; });
-
-  // Add and store a brush for each axis.
-  g.append("g")
-      .attr("class", "brush")
-      .each(function(d) {
-        d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brushstart", brushstart).on("brush", brush));
-      })
-    .selectAll("rect")
-      .attr("x", -8)
-      .attr("width", 16);
-});
+      .selectAll("rect")
+        .attr("x", -8)
+        .attr("width", 16);
+  });
+}
 
 function position(d) {
   var v = dragging[d];

@@ -15,11 +15,24 @@ html, body {
   stroke: steelblue;
   stroke-width: 1.5px; */
 
+  h1 {
+    text-align: center;
+    padding-bottom: 10px;
+  }
+
+  p {
+    padding-top: 50px;
+  }
+
   svg {
     font: 10px sans-serif;
   }
 
-  .tooltip {
+  .middle-content {
+    text-align: center;
+  }
+
+  .countryLabel {
     visibility: hidden;
     width: 120px;
     background-color: black;
