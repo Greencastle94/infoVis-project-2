@@ -32,6 +32,10 @@ html, body {
     font: 10px sans-serif;
   }
 
+  .info {
+    padding: 0px;
+  }
+
   .text-container {
     padding: 20px;
     width: 1000px;
