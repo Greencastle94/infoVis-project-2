@@ -22,6 +22,7 @@ $(function(){
 
 	slider.on("slideStop", function(sliderEvent) {
 		$("svg g").children().remove();
+		console.log(sliderEvent.value);
 
 		switch(sliderEvent.value) {
     case 3:
