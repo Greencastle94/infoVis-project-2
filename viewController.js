@@ -1,6 +1,6 @@
 var margin = {top: 30, right: 10, bottom: 10, left: 10},
     width = 1200 - margin.left - margin.right,
-    height = 700 - margin.top - margin.bottom;
+    height = 580 - margin.top - margin.bottom;
 
 var x = d3.scale.ordinal().rangePoints([0, width], 1);
 var y = {};
@@ -41,7 +41,7 @@ function loadData(data_url) {
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
       return d != "Country" && (y[d] = d3.scale.linear()
-          .domain(d3.extent(cars, function(p) { return +p[d].replace(',', '.'); }))
+          .domain([0, 100])
           .range([height, 0]));
     }))
 

@@ -20,6 +20,10 @@ html, body {
     padding: 10px;
   }
 
+  h2 {
+    margin: 0px;
+  }
+
   p {
     padding: 10px;
   }

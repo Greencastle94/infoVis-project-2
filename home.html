@@ -21,43 +21,69 @@
     <div class="middle-content">
       <div class="col-12 svg">
       </div>
-      <p class="info">Numbers are in percentage and 0 means there's no data.</p>
+      <p class="info">You can move around the variable axes and brush over them to filter. <br>Numbers are in percentage and 0 means there's no data.</p>
       <input style="width: 700px" class="slider">
       <div class="text-container">
         <h3>Research question</h3>
         <p>The overall question I was curious in was what factors contribute
-          to happiness in the world so I chose interesting questions which I
-          thought could affect happiness such as religion, family, trust in
-          people etc.</p>
-        <h3>Data transformation</h3>
-        <p>The data had to be transformed into some form that would be easier
-          to analyse. In some questions from WVS I had to choose the answer
-          which yielded the clearest answer such as “unemployed” or “immigration
-          prohibition”. The other answers you could say were different scales
-          of “yes” and therefore I took the “hard” no answers. From the
-          “Happiness” and “Trust in Press” questionnaires I summed up all
-          positive answers to get a somewhat “hard” yes.</p>
-        <img src="images/Immigration.PNG">
-        <img src="images/Unemployed.PNG">
-        <img src="images/CalcHappiness.PNG">
-        <img src="images/TrustPress.PNG">
-        <h3>Visual mapping</h3>
-        <p>My first thought of visual model to use for the 8 variable data was a
-          parallel coordinate system. I thought that it would be a good way to
-          visualize and compare different data points with that many dimensions.</p>
-        <h3>Results</h3>
-        <p>The most interesting results from this visualization was that I
-          couldn’t see any correlation between life satisfaction and happiness
-          or happiness and religion which I thought would have been strongly
-          correlated with each other.</p>
-        <img src="images/Result.PNG">
+          to happiness in the world and how it has changed over time. So I
+          chose interesting questions which I thought could affect happiness
+          such as religion, family, trust in people etc.</p>
+
+        <div class="well">
+          <h2>Analytic trail 1</p>
+          <h3>Data transformation</h3>
+          <p>The data had to be transformed into some form that would be easier
+            to analyse. In some questions from WVS I had to choose the answer
+            which yielded the clearest answer such as “immigration
+            prohibition” instead of "Let anyone come" and "Let some came". The
+            other answers you could say were different scales of “yes” and
+            therefore I took the “hard” no answers. From the “Happiness” and
+            “Trust in Press” questionnaires I summed up all positive answers to
+            get a somewhat “hard” yes. Time is represented by different charts.</p>
+          <img src="images/Immigration.PNG">
+          <img src="images/Unemployed.PNG">
+          <img src="images/CalcHappiness.PNG">
+          <img src="images/TrustPress.PNG">
+          <h3>Visual transformation</h3>
+          <p>My first thought of visual model to use for the 8 variable data was a
+            parallel coordinate system. I thought that it would be a good way to
+            visualize and compare different data points with that many dimensions.</p>
+          <h3>Result</h3>
+          <p>The most interesting results from this visualization was that I
+            couldn’t see any correlation between life satisfaction and happiness
+            or happiness and religion which I thought would have been strongly
+            correlated with each other.</p>
+        </div>
+
+        <br>
+
+        <div class="well">
+          <h2>Analytic trail 2</p>
+          <h3>Data transformation</h3>
+          <p>To be able to compare different time intervals I divided the data in
+            to different charts with data from that particular time period.</p>
+          <img src="images/TimeCharts.PNG">
+          <h3>Visual transformation</h3>
+          <p>A chose to visualize a timeline where each point is a chart with
+            data corresponding to that time period.</p>
+          <!-- <img align="middle" src="images/TimeScale.PNG"> -->
+          <h3>Result</h3>
+          <p>What I can interpret comparing the overall combined happiness from
+            all countries is that more people has become happier since 1995-1999.</p>
+          <img src="images/Happiness1.PNG">
+          <img src="images/Happiness2.PNG">
+        </div>
+
         <h3>Learnings</h3>
         <p>In this project I got to learn D3.js better and I understand now how
           you are supposed to work with it codewise. I didn’t have that much
           experience with web programming and with this project I have also been
           practicing those skills. But the biggest learning experience for me I
           think was working wih the information visualization pipeline in practice.</p>
+
         <h3>By: Lucas Grönborg</h3>
+        <p>Parallel Coordinate template by: <a href="https://bl.ocks.org/jasondavies/1341281" target="_blank">Jason Davies</a></p>
       </div>
     </div>
     <script type="text/javascript" src="viewController.js"></script>
